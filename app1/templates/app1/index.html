@@ -1,0 +1,75 @@
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Table</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 50%;
+            margin: 20px auto;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: lightgray;
+        }
+    </style>
+</head>
+<body>
+
+<h2 style="text-align:center;">User Details</h2>
+
+<table>
+    <tr>
+        <th>Name</th>
+        <th>Age</th>
+        <th>Can Vote</th>
+        <th>Length</th>
+        <th>date</th>
+        <th>vegetables</th>
+        <th>firstoff</th>
+    </tr>
+    {%for people in peoples%}
+    
+    
+    <tr>
+        <td>{{people.name|upper}}</td>
+        <td>{{people.age}}</td>
+        
+       <td>
+            {% if people.age <= 18 %} 
+                NO
+            {% else %} 
+                YES
+            {% endif %}
+        </td>
+        <td>{{people.name|length}}</td>
+        <td>{{ datetimes|date:"d-m-y" }}</td>
+     <td>
+        {% if "potato" in vegetables %}
+            potato mil gaya
+        {% elif "tomato" in vegetables %}
+            tomato mil gaya
+        {% else %}
+            aaluu mil gaya
+        {% endif %}
+    </td>
+        <td>{{vegetables|first}}</td>
+
+    </tr>
+
+   
+    
+    {%endfor%}
+</table>
+
+{{texta|truncatechars:10}}
+
+</body>
+</html>

@@ -1,0 +1,1779 @@
+{% comment %} <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Students</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- BOOTSTRAP SEARCH UI -->
+
+<div class="container mt-5">
+
+    <form method="GET">
+
+        <div class="card shadow-lg border-0 rounded-4 p-4">
+
+            <h3 class="text-center mb-4">
+                🔍 Student Search
+            </h3>
+
+            <div class="row g-3 align-items-center">
+
+                <!-- SEARCH INPUT -->
+                <div class="col-md-10">
+
+                    <input 
+                        type="text"
+                        class="form-control form-control-lg rounded-3"
+                        name="search"
+                        placeholder="Search student by name..."
+                        value="{{ request.GET.search }}"
+                    >
+
+                </div>
+
+                <!-- BUTTON -->
+                <div class="col-md-2">
+
+                    <button 
+                        type="submit"
+                        class="btn btn-success btn-lg w-100 rounded-3"
+                    >
+                        Search
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </form>
+
+</div>
+
+    <div class="container mt-5">
+
+        <h1 class="text-center mb-4">
+            Student List
+        </h1>
+
+       <table class="table table-bordered table-hover">
+
+    <thead class="table-dark">
+
+        <tr>
+            <th scope="col">#</th>
+            <th>Student ID</th>
+            <th>Student Department</th>
+            <th>Student Name</th>
+            <th>Student Email</th>
+            <th>Student Age</th>
+
+        </tr>
+
+    </thead>
+
+    <tbody>
+
+        {% for student in queryset %}
+
+        <tr>
+            <th scope="row" >{{forloop.counter}}</th>
+            <td>{{ student.student_id }}</td>
+
+            <td>{{ student.department.department }}</td>
+
+            <td>{{ student.student_name }}</td>
+
+            <td>{{ student.student_email }}</td>
+
+            <td>{{ student.student_age }}</td>
+
+        </tr>
+
+        {% endfor %}
+
+    </tbody>
+
+</table>
+<!-- PAGINATION UI START -->
+
+<style>
+    .pagination-container{
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        margin-top:30px;
+    }
+
+    .pagination{
+        display:flex;
+        align-items:center;
+        gap:10px;
+        background:#ffffff;
+        padding:12px 20px;
+        border-radius:12px;
+        box-shadow:0 4px 15px rgba(0,0,0,0.1);
+        flex-wrap:wrap;
+    }
+
+    .pagination a{
+        text-decoration:none;
+        padding:8px 14px;
+        border-radius:8px;
+        background:#0d6efd;
+        color:white;
+        font-weight:600;
+        transition:0.3s;
+    }
+
+    .pagination a:hover{
+        background:#084298;
+        transform:translateY(-2px);
+    }
+
+    .pagination .current-page{
+        padding:8px 16px;
+        background:#f1f3f5;
+        border-radius:8px;
+        font-weight:bold;
+        color:#333;
+    }
+
+    .pagination .disabled{
+        background:#adb5bd;
+        pointer-events:none;
+    }
+</style>
+
+<div class="pagination-container">
+
+    <div class="pagination">
+
+        <!-- FIRST -->
+        {% if queryset.has_previous %}
+            <a href="?page=1">⏮ First</a>
+
+            <a href="?page={{ queryset.previous_page_number }}">
+                ⬅ Previous
+            </a>
+        {% else %}
+            <a class="disabled">⏮ First</a>
+            <a class="disabled">⬅ Previous</a>
+        {% endif %}
+
+        <!-- CURRENT PAGE -->
+        <span class="current-page">
+            Page {{ queryset.number }} of {{ queryset.paginator.num_pages }}
+        </span>
+
+        <!-- NEXT -->
+        {% if queryset.has_next %}
+            <a href="?page={{ queryset.next_page_number }}">
+                Next ➡
+            </a>
+
+            <a href="?page={{ queryset.paginator.num_pages }}">
+                Last ⏭
+            </a> 
+        {% else %}
+            <a class="disabled">Next ➡</a>
+            <a class="disabled">Last ⏭</a>
+        {% endif %}
+
+    </div>
+
+</div>
+
+<!-- PAGINATION UI END -->
+    </div>
+
+</body>
+</html> {% endcomment %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% comment %} 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+
+        *{
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body{
+            background: linear-gradient(to right, #eef2f7, #dbe9f4);
+            min-height: 100vh;
+        }
+
+        /* HEADER */
+        .main-title{
+            font-size: 42px;
+            font-weight: 700;
+            color: #0d6efd;
+        }
+
+        .sub-title{
+            color: #6c757d;
+            font-size: 16px;
+        }
+
+        /* SEARCH CARD */
+        .search-card{
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .search-input{
+            height: 58px;
+            border-radius: 14px;
+            border: 2px solid #dee2e6;
+            transition: 0.3s;
+        }
+
+        .search-input:focus{
+            border-color: #0d6efd;
+            box-shadow: none;
+        }
+
+        .search-btn{
+            height: 58px;
+            border-radius: 14px;
+            font-weight: 600;
+            font-size: 17px;
+        }
+
+        /* TABLE CARD */
+        .table-card{
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            margin-top: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+
+        .table thead{
+            background: #0d6efd;
+            color: white;
+        }
+
+        .table thead th{
+            padding: 18px;
+            border: none;
+            font-size: 15px;
+        }
+
+        .table tbody td{
+            padding: 16px;
+            vertical-align: middle;
+        }
+
+        .table tbody tr{
+            transition: 0.3s;
+        }
+
+        .table tbody tr:hover{
+            transform: scale(1.01);
+            background: #f8fbff;
+        }
+
+        /* PAGINATION */
+        .pagination-container{
+            display:flex;
+            justify-content:center;
+            margin-top:30px;
+        }
+
+        .pagination{
+            background:white;
+            padding:15px 25px;
+            border-radius:16px;
+            box-shadow:0 5px 20px rgba(0,0,0,0.08);
+            gap:10px;
+            display:flex;
+            flex-wrap:wrap;
+        }
+
+        .pagination a{
+            text-decoration:none;
+            padding:10px 18px;
+            border-radius:10px;
+            background:#0d6efd;
+            color:white;
+            font-weight:600;
+            transition:0.3s;
+        }
+
+        .pagination a:hover{
+            background:#084298;
+            transform:translateY(-2px);
+        }
+
+        .pagination .disabled{
+            background:#adb5bd;
+            pointer-events:none;
+        }
+
+        .current-page{
+            background:#f1f3f5;
+            padding:10px 20px;
+            border-radius:10px;
+            font-weight:600;
+            color:#333;
+        }
+
+        /* RESPONSIVE */
+        @media(max-width:768px){
+
+            .main-title{
+                font-size: 30px;
+            }
+
+            .search-btn{
+                width:100%;
+            }
+
+            .table{
+                font-size: 13px;
+            }
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container py-5">
+
+    <!-- HEADER -->
+    <div class="text-center mb-5">
+
+        <h1 class="main-title">
+            🎓 Student Dashboard
+        </h1>
+
+        <p class="sub-title">
+            Manage and search student records easily
+        </p>
+
+    </div>
+
+    <!-- SEARCH -->
+    <div class="search-card">
+
+        <form method="GET">
+
+            <div class="row g-3">
+
+                <div class="col-md-10">
+
+                    <input
+                        type="text"
+                        name="search"
+                        class="form-control form-control-lg search-input"
+                        placeholder="Search student by name..."
+                        value="{{ request.GET.search }}"
+                    >
+
+                </div>
+
+                <div class="col-md-2">
+
+                    <button
+                        type="submit"
+                        class="btn btn-success btn-lg w-100 search-btn"
+                    >
+                        🔍 Search
+                    </button>
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+    <!-- TABLE -->
+    < class="table-card">
+
+        <div class="table-responsive">
+
+            <table class="table align-middle table-hover">
+
+                <thead>
+
+                    <tr>
+
+                        <th>#</th>
+                        <th>Student ID</th>
+                        <th>Department</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Age</th>
+                        <th>Rank</th>
+
+                    </tr>
+
+                </thead>
+                
+
+
+
+            <tbody>
+
+                {% for mark in query %}
+
+                <tr>
+
+                    <td>{{ forloop.counter }}</td>
+
+                    <td>
+                        <span class="badge bg-primary">
+                            {{ mark.student.student_id }}
+                        </span>
+                    </td>
+
+                    <td>
+                        {{ mark.student.department.department }}
+                    </td>
+
+                    <td>
+                        {{ mark.student.student_name }}
+                    </td>
+
+                    <td>
+                        {{ mark.student.student_email }}
+                    </td>
+
+                    <td>
+                        <span class="badge bg-success">
+                            {{ mark.student.student_age }}
+                        </span>
+                    </td>
+
+                    <td>
+                        {{ mark.subject.subject_name }}
+                    </td>
+
+                    <td>
+                        {{ mark.marks }}
+                    </td>
+
+                    <td>
+
+                        {% if mark.marks >= 40 %}
+
+                            <span class="badge bg-success">
+                                Pass
+                            </span>
+
+                        {% else %}
+
+                            <span class="badge bg-danger">
+                                Fail
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+
+           
+
+                       
+
+
+ 
+    <!-- PAGINATION -->
+    <div class="pagination-container">
+
+        <div class="pagination">
+
+            {% if queryset.has_previous %}
+
+                <a href="?page=1">
+                    ⏮ First
+                </a>
+
+                <a href="?page={{ queryset.previous_page_number }}">
+                    ⬅ Previous
+                </a>
+
+            {% else %}
+
+                <a class="disabled">
+                    ⏮ First
+                </a>
+
+                <a class="disabled">
+                    ⬅ Previous
+                </a>
+
+            {% endif %}
+
+            <span class="current-page">
+
+                Page {{ queryset.number }}
+                of
+                {{ queryset.paginator.num_pages }}
+
+            </span>
+
+            {% if queryset.has_next %}
+
+                <a href="?page={{ queryset.next_page_number }}">
+                    Next ➡
+                </a>
+
+                <a href="?page={{ queryset.paginator.num_pages }}">
+                    Last ⏭
+                </a>
+
+            {% else %}
+
+                <a class="disabled">
+                    Next ➡
+                </a>
+
+                <a class="disabled">
+                    Last ⏭
+                </a>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html> {% endcomment %}
+
+
+
+{% comment %} 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Marks Dashboard</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+
+        *{
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body{
+            background: linear-gradient(to right, #eef2f7, #dbe9f4);
+            min-height: 100vh;
+        }
+
+        /* HEADER */
+        .main-title{
+            font-size: 42px;
+            font-weight: 700;
+            color: #0d6efd;
+        }
+
+        .sub-title{
+            color: #6c757d;
+            font-size: 16px;
+        }
+
+        /* SEARCH CARD */
+        .search-card{
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .search-input{
+            height: 58px;
+            border-radius: 14px;
+            border: 2px solid #dee2e6;
+        }
+
+        .search-input:focus{
+            border-color: #0d6efd;
+            box-shadow: none;
+        }
+
+        .search-btn{
+            height: 58px;
+            border-radius: 14px;
+            font-weight: 600;
+            font-size: 17px;
+        }
+
+        /* TABLE CARD */
+        .table-card{
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+
+        .table thead{
+            background: #0d6efd;
+            color: white;
+        }
+
+        .table thead th{
+            padding: 16px;
+            border: none;
+        }
+
+        .table tbody td{
+            padding: 14px;
+            vertical-align: middle;
+        }
+
+        .table tbody tr{
+            transition: 0.3s;
+        }
+
+        .table tbody tr:hover{
+            background: #f8fbff;
+            transform: scale(1.01);
+        }
+
+        .student-id{
+            background: #0d6efd;
+            color: white;
+            padding: 7px 12px;
+            border-radius: 10px;
+            font-size: 13px;
+        }
+
+        .age-badge{
+            background: #198754;
+            color: white;
+            padding: 7px 12px;
+            border-radius: 10px;
+            font-size: 13px;
+        }
+
+        .pass-badge{
+            background: #198754;
+            color: white;
+            padding: 7px 14px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .fail-badge{
+            background: #dc3545;
+            color: white;
+            padding: 7px 14px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        /* PAGINATION */
+        .pagination-container{
+            display:flex;
+            justify-content:center;
+            margin-top:30px;
+        }
+
+        .pagination{
+            background:white;
+            padding:15px 25px;
+            border-radius:16px;
+            box-shadow:0 5px 20px rgba(0,0,0,0.08);
+            gap:10px;
+            display:flex;
+            flex-wrap:wrap;
+        }
+
+        .pagination a{
+            text-decoration:none;
+            padding:10px 18px;
+            border-radius:10px;
+            background:#0d6efd;
+            color:white;
+            font-weight:600;
+            transition:0.3s;
+        }
+
+        .pagination a:hover{
+            background:#084298;
+            transform:translateY(-2px);
+        }
+
+        .pagination .disabled{
+            background:#adb5bd;
+            pointer-events:none;
+        }
+
+        .current-page{
+            background:#f1f3f5;
+            padding:10px 20px;
+            border-radius:10px;
+            font-weight:600;
+            color:#333;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container py-5">
+
+    <!-- HEADER -->
+    <div class="text-center mb-5">
+
+        <h1 class="main-title">
+            🎓 Student Marks Dashboard
+        </h1>
+
+        <p class="sub-title">
+            Manage student subjects, marks and results
+        </p>
+
+    </div>
+
+    <!-- SEARCH -->
+    <div class="search-card">
+
+        <form method="GET">
+
+            <div class="row g-3">
+
+                <div class="col-md-10">
+
+                    <input
+                        type="text"
+                        name="search"
+                        class="form-control form-control-lg search-input"
+                        placeholder="Search student..."
+                        value="{{ request.GET.search }}"
+                    >
+
+                </div>
+
+                <div class="col-md-2">
+
+                    <button
+                        type="submit"
+                        class="btn btn-success btn-lg w-100 search-btn"
+                    >
+                        🔍 Search
+                    </button>
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-card">
+
+        <div class="table-responsive">
+
+            <table class="table table-hover align-middle">
+
+                <thead>
+
+                    <tr>
+                        <th>#</th>
+                        <th>Student ID</th>
+                        <th>Department</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Age</th>
+                        <th>Subject</th>
+                        <th>Marks</th>
+                        <th>Status</th>
+                    </tr>
+
+                </thead>
+
+              <tbody>
+
+    {% for student in queryset %}
+
+        {% for mark in student.studentmarks.all %}
+
+        <tr>
+
+            <td>{{ forloop.counter }}</td>
+
+            <!-- ID -->
+            <td>
+                <span class="student-id">
+                    {{ student.student_id }}
+                </span>
+            </td>
+
+            <!-- Department -->
+            <td>
+                {{ student.department.department }}
+            </td>
+
+            <!-- Name -->
+            <td>
+                {{ student.student_name }}
+            </td>
+
+            <!-- Email -->
+            <td>
+                {{ student.student_email }}
+            </td>
+
+            <!-- Subject -->
+            <td>
+                {{ mark.subject.subject_name }}
+            </td>
+
+            <!-- Marks -->
+            <td>
+                {{ mark.marks }}
+            </td>
+
+            <!-- Rank -->
+            <td>
+
+                {% if mark.marks >= 40 %}
+
+                    <span class="pass-badge">
+                        ✅ Pass
+                    </span>
+
+                {% else %}
+
+                    <span class="fail-badge">
+                        ❌ Fail
+                    </span>
+
+                {% endif %}
+
+            </td>
+
+        </tr>
+
+        {% endfor %}
+
+    {% empty %}
+
+        <tr>
+            <td colspan="8" class="text-center text-danger fw-bold">
+                No Student Data Found
+            </td>
+        </tr>
+
+    {% endfor %}
+
+</tbody>
+           
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html> {% endcomment %}
+
+{% comment %} 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+
+        *{
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body{
+            background: linear-gradient(to right, #eef2f7, #dbe9f4);
+            min-height: 100vh;
+        }
+
+        /* HEADER */
+        .main-title{
+            font-size: 42px;
+            font-weight: 700;
+            color: #0d6efd;
+        }
+
+        .sub-title{
+            color: #6c757d;
+            font-size: 16px;
+        }
+
+        /* SEARCH CARD */
+        .search-card{
+            background: white;
+            border-radius: 22px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+        }
+
+        .search-input{
+            height: 58px;
+            border-radius: 14px;
+            border: 2px solid #dee2e6;
+        }
+
+        .search-input:focus{
+            border-color: #0d6efd;
+            box-shadow: none;
+        }
+
+        .search-btn{
+            height: 58px;
+            border-radius: 14px;
+            font-weight: 600;
+        }
+
+        /* TABLE */
+        .table-card{
+            background: white;
+            border-radius: 22px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+
+        .table{
+            margin-bottom: 0;
+        }
+
+        .table thead{
+            background: #0d6efd;
+            color: white;
+        }
+
+        .table thead th{
+            border: none;
+            padding: 18px;
+            font-size: 15px;
+        }
+
+        .table tbody td{
+            padding: 16px;
+            vertical-align: middle;
+        }
+
+        .table tbody tr{
+            transition: 0.3s;
+        }
+
+        .table tbody tr:hover{
+            background: #f8fbff;
+            transform: scale(1.005);
+        }
+
+        /* BADGES */
+        .student-id{
+            background: #0d6efd;
+            color: white;
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .age-badge{
+            background: #198754;
+            color: white;
+            padding: 7px 12px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .pass-badge{
+            background: #198754;
+            color: white;
+            padding: 7px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .fail-badge{
+            background: #dc3545;
+            color: white;
+            padding: 7px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        /* PAGINATION */
+        .pagination-container{
+            display:flex;
+            justify-content:center;
+            margin-top:35px;
+        }
+
+        .pagination{
+            background:white;
+            padding:15px 25px;
+            border-radius:18px;
+            box-shadow:0 5px 20px rgba(0,0,0,0.08);
+            gap:10px;
+            display:flex;
+            flex-wrap:wrap;
+        }
+
+        .pagination a{
+            text-decoration:none;
+            padding:10px 18px;
+            border-radius:12px;
+            background:#0d6efd;
+            color:white;
+            font-weight:600;
+            transition:0.3s;
+        }
+
+        .pagination a:hover{
+            background:#084298;
+            transform:translateY(-2px);
+        }
+
+        .pagination .disabled{
+            background:#adb5bd;
+            pointer-events:none;
+        }
+
+        .current-page{
+            background:#f1f3f5;
+            padding:10px 20px;
+            border-radius:12px;
+            font-weight:600;
+            color:#333;
+        }
+
+        /* RESPONSIVE */
+        @media(max-width:768px){
+
+            .main-title{
+                font-size: 30px;
+            }
+
+            .table{
+                font-size: 13px;
+            }
+
+            .search-btn{
+                width:100%;
+            }
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container py-5">
+
+    <!-- HEADER -->
+    <div class="text-center mb-5">
+
+        <h1 class="main-title">
+            🎓 Student Dashboard
+        </h1>
+
+        <p class="sub-title">
+            Manage student records, marks and results easily
+        </p>
+
+    </div>
+
+    <!-- SEARCH -->
+    <div class="search-card">
+
+        <form method="GET">
+
+            <div class="row g-3">
+
+                <div class="col-md-10">
+
+                    <input
+                        type="text"
+                        name="search"
+                        class="form-control form-control-lg search-input"
+                        placeholder="Search by name, email, ID..."
+                        value="{{ request.GET.search }}"
+                    >
+
+                </div>
+
+                <div class="col-md-2">
+
+                    <button
+                        type="submit"
+                        class="btn btn-success btn-lg w-100 search-btn"
+                    >
+                        🔍 Search
+                    </button>
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-card">
+
+        <div class="table-responsive">
+
+            <table class="table table-hover align-middle">
+
+                <thead>
+
+                    <tr>
+
+                        <th>#</th>
+                        <th>ID</th>
+                        <th>Department</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Age</th>
+                        <th>Subject</th>
+                        <th>Marks</th>
+                        <th>Status</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for student in queryset %}
+
+                        {% for mark in student.studentmarks.all %}
+
+                        <tr>
+
+                            <td>{{ forloop.counter }}</td>
+
+                            <td>
+                                <span class="student-id">
+                                    {{ student.student_id }}
+                                </span>
+                            </td>
+
+                            <td>
+                                {{ student.department.department }}
+                            </td>
+
+                            <td>
+                                {{ student.student_name }}
+                            </td>
+
+                            <td>
+                                {{ student.student_email }}
+                            </td>
+
+                            <td>
+                                <span class="age-badge">
+                                    {{ student.student_age }}
+                                </span>
+                            </td>
+
+                            <td>
+                                {{ mark.subject.subject_name }}
+                            </td>
+
+                            <td>
+                                <strong>{{ mark.marks }}</strong>
+                            </td>
+
+                            <td>
+
+                                {% if mark.marks >= 40 %}
+
+                                    <span class="pass-badge">
+                                        ✅ Pass
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="fail-badge">
+                                        ❌ Fail
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    {% empty %}
+
+                    <tr>
+
+                        <td colspan="9" class="text-center text-danger fw-bold py-4">
+                            No Student Data Found
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+    <!-- PAGINATION -->
+    <div class="pagination-container">
+
+        <div class="pagination">
+
+            {% if queryset.has_previous %}
+
+                <a href="?page=1">
+                    ⏮ First
+                </a>
+
+                <a href="?page={{ queryset.previous_page_number }}">
+                    ⬅ Previous
+                </a>
+
+            {% else %}
+
+                <a class="disabled">
+                    ⏮ First
+                </a>
+
+                <a class="disabled">
+                    ⬅ Previous
+                </a>
+
+            {% endif %}
+
+            <span class="current-page">
+
+                Page {{ queryset.number }}
+                of
+                {{ queryset.paginator.num_pages }}
+
+            </span>
+
+            {% if queryset.has_next %}
+
+                <a href="?page={{ queryset.next_page_number }}">
+                    Next ➡
+                </a>
+
+                <a href="?page={{ queryset.paginator.num_pages }}">
+                    Last ⏭
+                </a>
+
+            {% else %}
+
+                <a class="disabled">
+                    Next ➡
+                </a>
+
+                <a class="disabled">
+                    Last ⏭
+                </a>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html> {% endcomment %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+
+        *{
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body{
+            background: linear-gradient(to right, #eef2f7, #dbe9f4);
+            min-height: 100vh;
+        }
+
+        /* HEADER */
+        .main-title{
+            font-size: 42px;
+            font-weight: 700;
+            color: #0d6efd;
+        }
+
+        .sub-title{
+            color: #6c757d;
+            font-size: 16px;
+        }
+
+        /* SEARCH CARD */
+        .search-card{
+            background: white;
+            border-radius: 22px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+        }
+
+        .search-input{
+            height: 58px;
+            border-radius: 14px;
+            border: 2px solid #dee2e6;
+        }
+
+        .search-input:focus{
+            border-color: #0d6efd;
+            box-shadow: none;
+        }
+
+        .search-btn{
+            height: 58px;
+            border-radius: 14px;
+            font-weight: 600;
+        }
+
+        /* TABLE */
+        .table-card{
+            background: white;
+            border-radius: 22px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+
+        .table{
+            margin-bottom: 0;
+        }
+
+        .table thead{
+            background: #0d6efd;
+            color: white;
+        }
+
+        .table thead th{
+            border: none;
+            padding: 18px;
+            font-size: 15px;
+        }
+
+        .table tbody td{
+            padding: 16px;
+            vertical-align: middle;
+        }
+
+        .table tbody tr{
+            transition: 0.3s;
+        }
+
+        .table tbody tr:hover{
+            background: #f8fbff;
+            transform: scale(1.005);
+        }
+
+        /* BADGES */
+       .student-id{
+    background: #e2e9f3;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    display: inline-block;
+}
+
+        .age-badge{
+            background: #198754;
+            color: white;
+            padding: 7px 12px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        /* PAGINATION */
+        .pagination-container{
+            display:flex;
+            justify-content:center;
+            margin-top:35px;
+        }
+
+        .pagination{
+            background:white;
+            padding:15px 25px;
+            border-radius:18px;
+            box-shadow:0 5px 20px rgba(0,0,0,0.08);
+            gap:10px;
+            display:flex;
+            flex-wrap:wrap;
+        }
+
+        .pagination a{
+            text-decoration:none;
+            padding:10px 18px;
+            border-radius:12px;
+            background:#0d6efd;
+            color:white;
+            font-weight:600;
+            transition:0.3s;
+        }
+
+        .pagination a:hover{
+            background:#084298;
+            transform:translateY(-2px);
+        }
+
+        .pagination .disabled{
+            background:#adb5bd;
+            pointer-events:none;
+        }
+
+        .current-page{
+            background:#f1f3f5;
+            padding:10px 20px;
+            border-radius:12px;
+            font-weight:600;
+            color:#333;
+        }
+
+        /* RESPONSIVE */
+        @media(max-width:768px){
+
+            .main-title{
+                font-size: 30px;
+            }
+
+            .table{
+                font-size: 13px;
+            }
+
+            .search-btn{
+                width:100%;
+            }
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container py-5">
+
+    <!-- HEADER -->
+    <div class="text-center mb-5">
+
+        <h1 class="main-title">
+            🎓 Student Dashboard
+        </h1>
+
+        <p class="sub-title">
+            Manage student records easily
+        </p>
+
+    </div>
+
+    <!-- SEARCH -->
+    <div class="search-card">
+
+        <form method="GET">
+
+            <div class="row g-3">
+
+                <div class="col-md-10">
+
+                    <input
+                        type="text"
+                        name="search"
+                        class="form-control form-control-lg search-input"
+                        placeholder="Search by name, email, ID..."
+                        value="{{ request.GET.search }}"
+                    >
+
+                </div>
+
+                <div class="col-md-2">
+
+                    <button
+                        type="submit"
+                        class="btn btn-success btn-lg w-100 search-btn"
+                    >
+                        🔍 Search
+                    </button>
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-card">
+
+        <div class="table-responsive">
+
+            <table class="table table-hover align-middle">
+
+                <thead>
+
+                    <tr>
+
+                        <th>#</th>
+                        <th>ID</th>
+                        <th>Department</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Age</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for student in queryset %}
+
+                    <tr>
+
+                        <td>
+                            {{ forloop.counter }}
+                        </td>
+
+                        <td>
+    <span class="student-id">
+        <a href="{% url 'see_marks' student.student_id %}">
+            {{ student.student_id }}
+        </a>
+    </span>
+</td>
+
+                        <td>
+                            {{ student.department.department }}
+                        </td>
+
+                        <td>
+                            {{ student.student_name }}
+                        </td>
+
+                        <td>
+                            {{ student.student_email }}
+                        </td>
+
+                        <td>
+                            <span class="age-badge">
+                                {{ student.student_age }}
+                            </span>
+                        </td>
+
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+
+                        <td colspan="6" class="text-center text-danger fw-bold py-4">
+                            No Student Data Found
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+    <!-- PAGINATION -->
+    <div class="pagination-container">
+
+        <div class="pagination">
+
+            {% if queryset.has_previous %}
+
+                <a href="?page=1&search={{ request.GET.search }}">
+                    ⏮ First
+                </a>
+
+                <a href="?page={{ queryset.previous_page_number }}&search={{ request.GET.search }}">
+                    ⬅ Previous
+                </a>
+
+            {% else %}
+
+                <a class="disabled">
+                    ⏮ First
+                </a>
+
+                <a class="disabled">
+                    ⬅ Previous
+                </a>
+
+            {% endif %}
+
+            <span class="current-page">
+
+                Page {{ queryset.number }}
+                of
+                {{ queryset.paginator.num_pages }}
+
+            </span>
+
+            {% if queryset.has_next %}
+
+                <a href="?page={{ queryset.next_page_number }}&search={{ request.GET.search }}">
+                    Next ➡
+                </a>
+
+                <a href="?page={{ queryset.paginator.num_pages }}&search={{ request.GET.search }}">
+                    Last ⏭
+                </a>
+
+            {% else %}
+
+                <a class="disabled">
+                    Next ➡
+                </a>
+
+                <a class="disabled">
+                    Last ⏭
+                </a>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>
